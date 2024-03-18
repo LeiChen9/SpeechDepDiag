@@ -1,7 +1,6 @@
 import torch, pdb
 from DataProcess.data_config import DataConfig
 from DataProcess.DataProcessor import DataProcessor
-from transformers import Wav2Vec2Model, AutoConfig
 
 if __name__ == "__main__":
     print(torch.cuda.is_available())
