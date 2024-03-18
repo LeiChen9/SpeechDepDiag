@@ -149,7 +149,7 @@ if __name__ == "__main__":
     )
     model.freeze_feature_extractor()
     training_args = TrainingArguments(
-        output_dir="/content/wav2vec2-xlsr-greek-speech-emotion-recognition",
+        output_dir="./Model/Checkpoints/SDRModel-v1",
         # output_dir="/content/gdrive/MyDrive/wav2vec2-xlsr-greek-speech-emotion-recognition"
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
