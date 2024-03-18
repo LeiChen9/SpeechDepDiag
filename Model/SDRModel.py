@@ -9,6 +9,15 @@ from transformers.models.wav2vec2.modeling_wav2vec2 import (
     Wav2Vec2Model
 )
 
+def relative_positional_encoding(seq_length, embedding_dim):
+    inv_freq = 1 / (10000 ** (torch.arange(0, embedding_dim, 2).float() / embedding_dim))
+    positions = torch.arange(seq_length).unsqueeze(1)
+    sinusoid_inp = torch.ger(positions, inv_freq)
+    
+    pos_enc = torch.cat([torch.sin(sinusoid_inp), torch.cos(sinusoid_inp)], dim=-1)
+    
+    return pos_enc
+
 @dataclass
 class SpeechClassifierOutput(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
