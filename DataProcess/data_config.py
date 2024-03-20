@@ -54,13 +54,14 @@ class DataConfig:
             self.neg_path_lst.append(file_dic['neg'])
             self.neutral_path_lst.append(file_dic['neutral'])
             self.label_lst.append(file_dic['label'])
-
+            
         self.data_df = pd.DataFrame({
-            'name': self.name_lst,
-            'pos_path': self.pos_path_lst,
-            'neg_path': self.neg_path_lst,
-            'neutral_path': self.neutral_path_lst,
-            'label': self.label_lst
+            'name': self.name_lst * 3,
+            'path': self.pos_path_lst + self.neg_path_lst + self.neutral_path_lst,
+            # 'pos_path': self.pos_path_lst,
+            # 'neg_path': self.neg_path_lst,
+            # 'neutral_path': self.neutral_path_lst,
+            'label': self.label_lst * 3
         })
         self.data_df['tag'] = self.data_df['name'].apply(lambda x: 'train' if x[0] == 't' else 'test')
         return self.data_df

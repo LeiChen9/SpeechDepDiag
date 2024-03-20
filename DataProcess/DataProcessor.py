@@ -1,8 +1,18 @@
 from transformers import AutoConfig, Wav2Vec2Processor
-from transformers import Wav2Vec2Model
+import torch
+import numpy as np
 import torchaudio
 import transformers
+import pdb
 from datasets import load_dataset, load_metric
+
+def sinusoids(length, channels, max_timescale=10000):
+    """Returns sinusoids for positional embedding"""
+    assert channels % 2 == 0
+    log_timescale_increment = np.log(max_timescale) / (channels // 2 - 1)
+    inv_timescales = torch.exp(-log_timescale_increment * torch.arange(channels // 2))
+    scaled_time = torch.arange(length)[:, np.newaxis] * inv_timescales[np.newaxis, :]
+    return torch.cat([torch.sin(scaled_time), torch.cos(scaled_time)], dim=1)
 
 class DataProcessor:
     def __init__(self, data_files):
@@ -37,15 +47,17 @@ class DataProcessor:
         print(f"The target sampling rate: {self.target_sampling_rate}")
         
     def preprocess_function(self, examples):
-        pos_list = [self.speech_file_to_array_fn(path) for path in examples['pos_path']]
-        neg_list = [self.speech_file_to_array_fn(path) for path in examples['neg_path']]
-        neu_list = [self.speech_file_to_array_fn(path) for path in examples['neutral_path']]
+        # pos_list = [self.speech_file_to_array_fn(path) for path in examples['pos_path']]
+        # neg_list = [self.speech_file_to_array_fn(path) for path in examples['neg_path']]
+        # neu_list = [self.speech_file_to_array_fn(path) for path in examples['neutral_path']]
+        speech_list = [self.speech_file_to_array_fn(path) for path in examples['path']]
         target_list = examples['label']
         
-        result = transformers.feature_extraction_utils.BatchFeature()
-        result['pos'] = self.processor(pos_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
-        result['neg'] = self.processor(neg_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
-        result['neu'] = self.processor(neu_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result = transformers.feature_extraction_utils.BatchFeature()
+        # result['pos'] = self.processor(pos_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result['neg'] = self.processor(neg_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result['neu'] = self.processor(neu_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        result = self.processor(speech_list, sampling_rate=self.target_sampling_rate)
         result["labels"] = target_list
 
         return result
@@ -57,10 +69,13 @@ class DataProcessor:
         return speech
 
 if __name__ == "__main__":
-    data_files = {
-        "train": './Data/Config/train_dataset.pkl', 
-        "test": './Data/Config/eval_dataset.pkl'
-    }
-    data_processor = DataProcessor(data_files)
-    print(data_processor.train_dataset)
-    print(data_processor.eval_dataset)
+    # data_files = {
+    #     "train": './Data/Config/train_dataset.pkl', 
+    #     "test": './Data/Config/eval_dataset.pkl'
+    # }
+    # data_processor = DataProcessor(data_files)
+    # print(data_processor.train_dataset)
+    # print(data_processor.eval_dataset)
+    example = np.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+    pos_emb = sinusoids(example.shape[0], )
+    pdb.set_trace()
