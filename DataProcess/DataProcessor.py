@@ -47,15 +47,17 @@ class DataProcessor:
         print(f"The target sampling rate: {self.target_sampling_rate}")
         
     def preprocess_function(self, examples):
-        pos_list = [self.speech_file_to_array_fn(path) for path in examples['pos_path']]
-        neg_list = [self.speech_file_to_array_fn(path) for path in examples['neg_path']]
-        neu_list = [self.speech_file_to_array_fn(path) for path in examples['neutral_path']]
+        # pos_list = [self.speech_file_to_array_fn(path) for path in examples['pos_path']]
+        # neg_list = [self.speech_file_to_array_fn(path) for path in examples['neg_path']]
+        # neu_list = [self.speech_file_to_array_fn(path) for path in examples['neutral_path']]
+        speech_list = [self.speech_file_to_array_fn(path) for path in examples['path']]
         target_list = examples['label']
         
-        result = transformers.feature_extraction_utils.BatchFeature()
-        result['pos'] = self.processor(pos_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
-        result['neg'] = self.processor(neg_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
-        result['neu'] = self.processor(neu_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result = transformers.feature_extraction_utils.BatchFeature()
+        # result['pos'] = self.processor(pos_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result['neg'] = self.processor(neg_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        # result['neu'] = self.processor(neu_list, sampling_rate=self.target_sampling_rate, return_tensors="pt", padding="longest")['input_values'].numpy()
+        result = self.processor(speech_list, sampling_rate=self.target_sampling_rate)
         result["labels"] = target_list
 
         return result
@@ -75,5 +77,5 @@ if __name__ == "__main__":
     # print(data_processor.train_dataset)
     # print(data_processor.eval_dataset)
     example = np.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
-    pos_emb = sinusoids(example.shape[0], 2)
+    pos_emb = sinusoids(example.shape[0], )
     pdb.set_trace()
