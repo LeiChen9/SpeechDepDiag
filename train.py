@@ -43,7 +43,7 @@ class DataCollatorCTCWithPadding:
     pad_to_multiple_of_labels: Optional[int] = None
 
     def __call__(self, features: List[Dict[str, Union[List[int], torch.Tensor]]]) -> Dict[str, torch.Tensor]:
-        input_features = [{"input_values": feature["input_values"]} for feature in features]
+        input_features = [{"input_values": feature["pos"]+feature["neg"]+feature["neu"]} for feature in features]
         label_features = [feature["labels"] for feature in features]
 
         d_type = torch.long if isinstance(label_features[0], int) else torch.float
